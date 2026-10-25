@@ -1,0 +1,27 @@
+
+# Build output
+client/dist/
+server/dist/
+client/build/
+server/build/
+
+# Local database and secrets
+.env.*
+!.env.example
+
+# Private uploaded documents
+server/uploads/*
+!server/uploads/.gitkeep
+# Private application documents
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
