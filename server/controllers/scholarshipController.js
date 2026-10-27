@@ -196,14 +196,16 @@ const deleteScholarship = async (req, res, next) => {
   }
 };
 
+const { getOrCreateStudent } = require('./studentController');
+
 // @desc    Check eligibility for a scholarship
 // @route   GET /api/scholarships/:id/eligibility
 // @access  Private (Student)
 const checkScholarshipEligibility = async (req, res, next) => {
   try {
-    const student = await Student.findOne({ userId: req.user._id });
+    let student = await Student.findOne({ userId: req.user._id });
     if (!student) {
-      return sendError(res, 'Student profile not found. Please complete your profile.', 404);
+      student = await getOrCreateStudent(req.user);
     }
 
     const result = await checkEligibility(student._id, req.params.id);

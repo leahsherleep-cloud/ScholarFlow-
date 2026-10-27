@@ -77,6 +77,8 @@ const createApplication = async (req, res, next) => {
   }
 };
 
+const { getOrCreateStudent } = require('./studentController');
+
 // @desc    Get applications (role-based)
 // @route   GET /api/applications
 // @access  Private
@@ -86,8 +88,10 @@ const getApplications = async (req, res, next) => {
     const filter = {};
 
     if (req.user.role === 'student') {
-      const student = await Student.findOne({ userId: req.user._id });
-      if (!student) return sendError(res, 'Student profile not found', 404);
+      let student = await Student.findOne({ userId: req.user._id });
+      if (!student) {
+        student = await getOrCreateStudent(req.user);
+      }
       filter.student = student._id;
     }
 

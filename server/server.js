@@ -42,20 +42,35 @@ const authLimiter = rateLimit({
 app.use(limiter);
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
+const configuredClientUrl = (process.env.CLIENT_URL || '').replace(/\/+$/, '');
+
 const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'https://scholarflow-918ku4rkf-leah-cc91.vercel.app',
+  configuredClientUrl,
   'https://scholarflow-rho.vercel.app',
+  'https://scholarflow-918ku4rkf-leah-cc91.vercel.app',
   'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
 ].filter(Boolean);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  const cleanOrigin = origin.replace(/\/+$/, '');
+  if (allowedOrigins.includes(cleanOrigin)) return true;
+  // Allow official ScholarFlow Vercel deployments (production + preview domains)
+  if (/^https:\/\/scholarflow[a-z0-9-]*\.vercel\.app$/.test(cleanOrigin)) {
+    return true;
+  }
+  return false;
+};
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         return callback(null, true);
       }
-      return callback(new Error('Origin not allowed by CORS'));
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

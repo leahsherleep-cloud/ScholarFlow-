@@ -1,11 +1,24 @@
 
 import axios from 'axios';
 
-const rawApiUrl = import.meta.env.VITE_API_URL || '';
-const cleanApiUrl = rawApiUrl.replace(/\/+$/, '');
+// In production, fallback to the deployed Render backend URL if VITE_API_URL is unset.
+// In development, fallback to '' so requests use Vite's local dev server proxy (/api -> localhost:5000).
+const defaultApiUrl = import.meta.env.PROD
+  ? 'https://scholarflow-api-2yas.onrender.com'
+  : '';
+
+let rawApiUrl = (import.meta.env.VITE_API_URL || defaultApiUrl).trim();
+
+// Strip trailing slashes
+rawApiUrl = rawApiUrl.replace(/\/+$/, '');
+
+// Prevent duplicate '/api/api' if the user included '/api' in VITE_API_URL
+if (rawApiUrl.endsWith('/api')) {
+  rawApiUrl = rawApiUrl.slice(0, -4);
+}
 
 const api = axios.create({
-  baseURL: cleanApiUrl ? `${cleanApiUrl}/api` : '/api',
+  baseURL: rawApiUrl ? `${rawApiUrl}/api` : '/api',
   headers: {
     'Content-Type': 'application/json',
   },
