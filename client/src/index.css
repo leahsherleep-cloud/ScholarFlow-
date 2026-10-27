@@ -19,12 +19,7 @@
   --color-text-muted:     #94A3B8;
 }
 
-/* ─── Reset ─────────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+
 
 html {
   scroll-behavior: smooth;
